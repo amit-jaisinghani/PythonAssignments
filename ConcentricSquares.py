@@ -30,15 +30,17 @@ def init():
     turtle.up()
     turtle.setheading(0)
     turtle.title('squares')
+    pass
 
 def drawSquare():
     turtle.setheading(0)
     turtle.down()
-    for x in range(4):
-        turtle.forward(100)
-        turtle.left(90)
+    for x in range(3):
+        turtle.forward(50)
+        turtle.left(120)
+    turtle.left(60)
+    turtle.forward(50)
     turtle.up()
-    turtle.setposition(50,50)
     pass
 
 def main():
