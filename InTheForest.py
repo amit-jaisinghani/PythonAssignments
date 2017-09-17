@@ -10,29 +10,24 @@ This is a program which draws some pictures - first of a night-time scene in a f
 
 import turtle
 import random
+import math
 
 # global constants for window dimensions
-WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 800
 
 # global variables
-NO_OF_TREES = 1
-DRAW_HOUSE = False
-IS_FIRST_TREE = True
-LUMBER = 0
-MAX_TREE_HEIGHT = 0
+WALL_HEIGHT = 100
 
 
 def init():
     """
-        Get configurations and initialize for drawing.  (-300, -300) is in the lower left and
-        (300, 300) is in the upper right.
+        Initialize for drawing.  (-400, -400) is in the lower left and
+        (400, 400) is in the upper right.
         :pre: pos (0,0), heading (east), up
-        :post: pos (0,0), heading (east), up
-    :return: None
+        :post: pos (0,0), heading (east), down
+        :return: None
     """
-    get_configurations()
-
     turtle.setworldcoordinates(-WINDOW_WIDTH / 2, -WINDOW_WIDTH / 2,
                                WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2)
 
@@ -45,19 +40,18 @@ def init():
 def get_configurations():
     """
         Gathers user inputs for the program.
-        :return: None
+        :return: no_of_trees, house_required
     """
-    global NO_OF_TREES, DRAW_HOUSE
-    NO_OF_TREES = int(input("How many trees do you want? "))
-    if NO_OF_TREES == 1:
-        DRAW_HOUSE = False
+    no_of_trees = int(input("How many trees in your forest? "))
+    if no_of_trees <= 1:
+        house_required = False
     else:
-        DRAW_HOUSE = input("Do you want house? yes or no? ")
-        if DRAW_HOUSE == "yes" or DRAW_HOUSE == "Yes" or DRAW_HOUSE == "YES":
-            DRAW_HOUSE = True
+        house_required = input("Is there a house in the forest (y/n)? ")
+        if house_required == "yes" or house_required == "Yes" or house_required == "YES" or house_required == "y":
+            house_required = True
         else:
-            DRAW_HOUSE = False
-    pass
+            house_required = False
+    return no_of_trees, house_required
 
 
 def draw_path():
@@ -65,23 +59,19 @@ def draw_path():
         Draws a path
         :pre: (relative) pos (0,0), heading (east), up
         :post: (relative) pos (100,0), heading (east), up
-    :return: None
+        :return: None
     """
-    global IS_FIRST_TREE
-    if IS_FIRST_TREE:
-        IS_FIRST_TREE = False
-    else:
-        turtle.down()
-        turtle.forward(100)
-        turtle.up()
+    turtle.down()
+    turtle.forward(100)
+    turtle.up()
     pass
 
 
 def draw_tree_trunk(height):
     """
-            Draws tree's trunk of given height
-            :pre: (relative) pos (0,0), heading (east), up
-            :post: (relative) pos (0, height), heading (east), up
+        Draws tree's trunk of given height
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (0, height), heading (east), up
         :return: height
     """
     turtle.setheading(90)
@@ -108,9 +98,9 @@ def retain_original_position(height):
 
 def draw_pine_tree_leaves():
     """
-        Draws tree's trunk of given height
+        Draws equilateral triangle of side 50
         :pre: (relative) pos (0,0), heading (east), up
-        :post: (relative) pos (0, height), heading (east), up
+        :post: (relative) pos (0,0), heading (east), up
         :return: None
     """
     side = 50
@@ -128,9 +118,9 @@ def draw_pine_tree_leaves():
 
 def draw_maple_tree_leaves():
     """
-        Draws tree's trunk of given height
+        Draws a circle of radius 30
         :pre: (relative) pos (0,0), heading (east), up
-        :post: (relative) pos (0, height), heading (east), up
+        :post: (relative) pos (0,0), heading (east), up
         :return: None
     """
     turtle.down()
@@ -141,9 +131,9 @@ def draw_maple_tree_leaves():
 
 def draw_box_tree_leaves():
     """
-        Draws tree's trunk of given height
+        Draws a square of side 50
         :pre: (relative) pos (0,0), heading (east), up
-        :post: (relative) pos (0, height), heading (east), up
+        :post: (relative) pos (0,0), heading (east), up
         :return: None
     """
     side = 50
@@ -159,32 +149,40 @@ def draw_box_tree_leaves():
 
 
 def draw_tree():
-    global LUMBER, MAX_TREE_HEIGHT
-    draw_path()
+    """
+        Draws a tree with trunk and leaves
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (0,0), heading (east), up
+        :return: tree_height, trunk_height
+    """
     tree_type = random.randint(1,3)
+
     if tree_type == 1:
-        height = draw_tree_trunk(random.randint(50, 200))
+        trunk_height = draw_tree_trunk(random.randint(50, 200))
         draw_pine_tree_leaves()
-        if MAX_TREE_HEIGHT < (height + 43.3):
-            MAX_TREE_HEIGHT = height + 43.3
+        tree_height = trunk_height + 43.3
     elif tree_type == 2:
-        height = draw_tree_trunk(random.randint(50, 150))
+        trunk_height = draw_tree_trunk(random.randint(50, 150))
         draw_maple_tree_leaves()
-        if MAX_TREE_HEIGHT < (height + 60):
-            MAX_TREE_HEIGHT = height + 60
+        tree_height = trunk_height + 60
     else:
-        height = draw_tree_trunk(random.randint(50, 175))
+        trunk_height = draw_tree_trunk(random.randint(50, 175))
         draw_box_tree_leaves()
-        if MAX_TREE_HEIGHT < (height + 50):
-            MAX_TREE_HEIGHT = height + 50
-    retain_original_position(height)
-    LUMBER = LUMBER + height
-    pass
+        tree_height = trunk_height + 50
+
+    retain_original_position(trunk_height)
+    return tree_height, trunk_height
 
 
-def draw_star():
+def draw_star(max_height):
+    """
+        Draws a star with line of 10 at every 30 degree from 0 to 360
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (0,0), heading (east), up
+        :return: None
+    """
     ray_length = 10
-    turtle.setposition(150, MAX_TREE_HEIGHT + 50)
+    turtle.setposition(150, max_height + ray_length + 10)
     turtle.down()
     for angle in range(0, 360, 30):
         turtle.setheading(angle)
@@ -195,35 +193,116 @@ def draw_star():
     pass
 
 
-def draw_house(lumber_available = 100):
-    draw_path()
+def draw_house(wall_height):
+    """
+        Draws a house of pentagonal shape
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (wall_height,0), heading (east), up
+        :return: lumber_available
+    """
+    lumber_available = 0
     turtle.down()
-    turtle.forward(lumber_available)
     turtle.left(90)
-    turtle.forward(lumber_available)
+    turtle.forward(wall_height)
+    lumber_available += wall_height
 
-    turtle.left(90)
-    turtle.forward(lumber_available)
-    turtle.left(90)
-    turtle.forward(lumber_available)
-    turtle.left(90)
+    turtle.right(45)
+    turtle.forward(wall_height / math.sqrt(2))
+    lumber_available += (wall_height / math.sqrt(2))
+    turtle.right(90)
+    turtle.forward(wall_height / math.sqrt(2))
+    lumber_available += (wall_height / math.sqrt(2))
 
-    turtle.forward(lumber_available)
+    turtle.right(45)
+    turtle.forward(wall_height)
+    lumber_available += wall_height
+
+    turtle.right(90)
+    turtle.forward(wall_height)
+    turtle.back(wall_height)
+    turtle.setheading(0)
     turtle.up()
-    pass
+    return lumber_available
+
+
+def calculate_wall_height(lumber_available):
+    """
+        Calculated wall height with respect to lumber available.
+        :return: wall height
+    """
+    return (math.sqrt(2) * lumber_available) / ((2 * math.sqrt(2)) + 1)
 
 
 def draw_night_scene():
-    global LUMBER, DRAW_HOUSE
-    if DRAW_HOUSE:
-        random_house_position = random.randint(1, NO_OF_TREES - 1)
+    """
+        Draws trees, house(optional) and a star
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (150, max_height + 20), heading (east), up
+        :return: None
+    """
+    global WALL_HEIGHT
+    no_of_trees, house_required = get_configurations()
+    max_height = 0
+    lumber_available = 0
+    init()
+
+    if house_required:
+        random_house_position = random.randint(1, no_of_trees - 1)
     else:
         random_house_position = -1
-    for x in range(0, NO_OF_TREES):
+
+    for x in range(0, no_of_trees):
         if x == random_house_position:
-            draw_house()
-        draw_tree()
-    draw_star()
+            lumber_available += draw_house(WALL_HEIGHT)
+            draw_path()
+
+        tree_height, trunk_height = draw_tree()
+        if max_height < tree_height:
+            max_height = tree_height
+        lumber_available += trunk_height
+
+        if x != no_of_trees-1:
+            draw_path()
+
+    draw_star(max_height)
+    print('Night is done, click on screen to continue...')
+    print("We have ", lumber_available," units of lumber for building.")
+    WALL_HEIGHT = calculate_wall_height(lumber_available)
+    print("We will build a house with walls ", WALL_HEIGHT, " tall.")
+    pass
+
+
+def draw_sun(wall_height):
+    """
+        Draws a circle
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (100,1.75 * wall_height), heading (east), up
+        :return: None
+    """
+    radius = 30
+    turtle.forward(100)
+    turtle.left(90)
+    turtle.forward(1.75 * wall_height)
+    turtle.down()
+    turtle.circle(radius)
+    turtle.up()
+    turtle.hideturtle()
+    pass
+
+
+def draw_day_scene(x, y):
+    """
+        Draws house and a sun
+        :pre: (relative) pos (0,0), heading (east), up
+        :post: (relative) pos (100,1.75 * WALL_HEIGHT), heading (east), up
+        :return: None
+    """
+    turtle.reset()
+    turtle.up()
+    turtle.setposition(-200, -300)
+    draw_house(WALL_HEIGHT)
+    draw_sun(WALL_HEIGHT)
+    print("Day is done, house is built, press enter to quit.")
     pass
 
 
@@ -235,8 +314,12 @@ def main():
         :return: None
     """
 
-    init()
     draw_night_scene()
+    turtle.onscreenclick(draw_day_scene)
+    turtle.onkeypress(quit,'Return')
+    turtle.listen()
+    turtle.setposition(0,0)
+    turtle.hideturtle()
     turtle.mainloop()
 
 
