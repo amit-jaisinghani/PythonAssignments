@@ -16,9 +16,6 @@ import math
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 800
 
-# global variables
-WALL_HEIGHT = 100
-
 
 def init():
     """
@@ -46,8 +43,8 @@ def get_configurations():
     if no_of_trees <= 1:
         house_required = False
     else:
-        house_required = input("Is there a house in the forest (y/n)? ")
-        if house_required == "yes" or house_required == "Yes" or house_required == "YES" or house_required == "y":
+        house_required_input = input("Is there a house in the forest (y/n)? ")
+        if house_required_input == "yes" or house_required_input == "Yes" or house_required_input == "YES" or house_required_input == "y":
             house_required = True
         else:
             house_required = False
@@ -240,7 +237,7 @@ def draw_night_scene():
         :post: (relative) pos (150, max_height + 20), heading (east), up
         :return: None
     """
-    global WALL_HEIGHT
+    wall_height = 100
     no_of_trees, house_required = get_configurations()
     max_height = 0
     lumber_available = 0
@@ -253,7 +250,7 @@ def draw_night_scene():
 
     for x in range(0, no_of_trees):
         if x == random_house_position:
-            lumber_available += draw_house(WALL_HEIGHT)
+            lumber_available += draw_house(wall_height)
             draw_path()
 
         tree_height, trunk_height = draw_tree()
@@ -267,9 +264,9 @@ def draw_night_scene():
     draw_star(max_height)
     print('Night is done, click on screen to continue...')
     print("We have ", lumber_available," units of lumber for building.")
-    WALL_HEIGHT = calculate_wall_height(lumber_available)
-    print("We will build a house with walls ", WALL_HEIGHT, " tall.")
-    pass
+    wall_height = calculate_wall_height(lumber_available)
+    print("We will build a house with walls ", wall_height, " tall.")
+    return wall_height
 
 
 def draw_sun(wall_height):
@@ -290,20 +287,22 @@ def draw_sun(wall_height):
     pass
 
 
-def draw_day_scene(x, y):
-    """
-        Draws house and a sun
-        :pre: (relative) pos (0,0), heading (east), up
-        :post: (relative) pos (100,1.75 * WALL_HEIGHT), heading (east), up
-        :return: None
-    """
-    turtle.reset()
-    turtle.up()
-    turtle.setposition(-200, -300)
-    draw_house(WALL_HEIGHT)
-    draw_sun(WALL_HEIGHT)
-    print("Day is done, house is built, press enter to quit.")
-    pass
+def bind_day_scene(wall_height):
+    def draw_day_scene(x, y):
+        """
+            Draws house and a sun
+            :pre: (relative) pos (0,0), heading (east), up
+            :post: (relative) pos (100,1.75 * wall_height), heading (east), up
+            :return: None
+        """
+        turtle.reset()
+        turtle.up()
+        turtle.setposition(-200, -300)
+        draw_house(wall_height)
+        draw_sun(wall_height)
+        print("Day is done, house is built, press enter to quit.")
+        pass
+    return draw_day_scene
 
 
 def main():
@@ -314,8 +313,8 @@ def main():
         :return: None
     """
 
-    draw_night_scene()
-    turtle.onscreenclick(draw_day_scene)
+    wall_height = draw_night_scene()
+    turtle.onscreenclick(bind_day_scene(wall_height))
     turtle.onkeypress(quit,'Return')
     turtle.listen()
     turtle.setposition(0,0)
