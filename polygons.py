@@ -18,7 +18,7 @@ WINDOW_HEIGHT = 800
 FILL_PEN_WIDTH = 2
 UNFILL_PEN_WIDTH = 8
 
-COLORS = 'red', 'orange', 'yellow', 'green', 'blue', 'black', 'violet'
+COLORS = 'red', 'orange', 'yellow', 'green', 'blue', 'black', 'violet' , 'magenta', 'pink'
 
 
 def init():
@@ -52,31 +52,52 @@ def take_input_from_the_user():
     return sides, status
 
 
-def draw_polygon(length, sides, status, turtle):
+def draw_polygon(length, sides, status, sum):
 
     if sides < 3:
-        return
+        return sum
 
     angle_of_current_polygon = 180 - (360/sides)
 
+    turtle.color(COLORS[sides-2])
+
+
     if status == "fill":
-        print(COLORS[sides])
-        turtle.color(COLORS[sides])
         turtle.begin_fill()
+        turtle.pencolor('black')
+        turtle.fillcolor(COLORS[sides-2])
 
     if sides == 3 or sides == 5 or sides == 7:
         for x in range(sides):
             turtle.forward(length)
-            draw_polygon(length / 2, sides - 1, status, turtle)
+            sum += length
+            sum = draw_polygon(length / 2, sides - 1, status, sum)
             turtle.left(180 - angle_of_current_polygon)
 
     else:
         for x in range(sides):
             turtle.back(length)
-            draw_polygon(length / 2, sides - 1, status, turtle)
+            sum += length
+            sum = draw_polygon(length / 2, sides - 1, status, sum)
             turtle.right(180-angle_of_current_polygon)
 
-    turtle.end_fill()
+    if status == 'fill':
+        turtle.end_fill()
+
+    return sum
+
+
+def write_name():
+    turtle.up()
+    turtle.setpos(-400,-350)
+    turtle.down()
+    turtle.write("Aditi Shailendra Singhai")
+    turtle.up()
+    turtle.setpos(-400, -400)
+    turtle.down()
+    turtle.write("Amit Shyam Jaisinghani")
+    turtle.up()
+    turtle.setpos(0,0)
 
     pass
 
@@ -91,7 +112,9 @@ def main():
     sides, status = take_input_from_the_user()
     init()
     # turtle.tracer(0, 0)
-    draw_polygon(200, sides, status, turtle)
+    sum = 0
+    print('Sum: ',draw_polygon(200, sides, status, sum))
+    write_name()
 
     turtle.mainloop()
 
