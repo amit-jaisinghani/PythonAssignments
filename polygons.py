@@ -10,6 +10,7 @@ Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
 """
 
 import turtle
+import random
 
 # global constants for window dimensions
 WINDOW_WIDTH = 800
@@ -63,9 +64,8 @@ def draw_polygon(length, sides, status, sum):
 
 
     if status == "fill":
-        turtle.begin_fill()
         turtle.pencolor('black')
-        turtle.fillcolor(COLORS[sides-2])
+        turtle.fillcolor(COLORS[random.randrange(len(COLORS))])
 
     if sides == 3 or sides == 5 or sides == 7:
         for x in range(sides):
@@ -80,9 +80,6 @@ def draw_polygon(length, sides, status, sum):
             sum += length
             sum = draw_polygon(length / 2, sides - 1, status, sum)
             turtle.right(180-angle_of_current_polygon)
-
-    if status == 'fill':
-        turtle.end_fill()
 
     return sum
 
@@ -111,9 +108,11 @@ def main():
     """
     sides, status = take_input_from_the_user()
     init()
-    # turtle.tracer(0, 0)
+    turtle.tracer(0, 0)
     sum = 0
+    turtle.begin_fill()
     print('Sum: ',draw_polygon(200, sides, status, sum))
+    turtle.end_fill()
     write_name()
 
     turtle.mainloop()
