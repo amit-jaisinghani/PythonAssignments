@@ -56,7 +56,7 @@ def take_input_from_the_user():
     sides = int(sys.argv[1])
     print("sides: ", sides)
 
-    status = (sys.argv[2])
+    status = (sys.argv/[2])
     print("status: ", status)
     return sides, status
 
@@ -151,7 +151,7 @@ def main():
     turtle.tracer(0, 0)
     print('Sum: ',draw_polygon(turtle.position(), turtle.heading(), SIDE_LENGTH, sides, status, COLORS[sides]))
     write_name()
-
+    turtle.update()
     turtle.mainloop()
 
 
