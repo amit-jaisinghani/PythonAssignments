@@ -20,9 +20,9 @@ WINDOW_HEIGHT = 800
 SIDE_LENGTH = 200
 
 FILL_PEN_WIDTH = 2
-UNFILL_PEN_WIDTH = 8
+UNFILL_PEN_WIDTH = 4
 
-COLORS = 'purple','grey','pink','red', 'orange', 'yellow', 'green', 'blue', 'maroon'
+COLORS = 'purple','grey','pink','#f9e611', '#f9104a', 'orange', 'green', '#990109', '#d8c9ca'
 
 
 def init():
@@ -30,7 +30,7 @@ def init():
         Initialize for drawing.  (-400, -400) is in the lower left and
         (400, 400) is in the upper right.
         :pre: pos (0,0), heading (east), up
-        :post: pos (-100,-300), heading (east), down
+        :post: pos (-100,-200), heading (east), down
         :return: None
     """
     turtle.setworldcoordinates(-WINDOW_WIDTH / 2, -WINDOW_WIDTH / 2,
@@ -38,7 +38,7 @@ def init():
 
     turtle.up()
     turtle.setheading(0)
-    turtle.setpos(-100,-300)
+    turtle.setpos(-100,-200)
     turtle.down()
     turtle.title('Polygons')
 
@@ -54,14 +54,19 @@ def take_input_from_the_user():
         sys.exit(1)
 
     sides = int(sys.argv[1])
-    print("sides: ", sides)
+    if 3>sides or sides>8 :
+        print("Usage: the value of side should be between 3 and 8.")
+        sys.exit(1)
 
-    status = (sys.argv/[2])
-    print("status: ", status)
+    status = (sys.argv[2])
+    if status != 'fill' and status != 'unfill':
+        print("Usage: enter valid status [fill | unfill].")
+        sys.exit(1)
+
     return sides, status
 
 
-def draw_polygon(start_point, start_heading, length, sides, status, color):
+def draw_polygon(length, sides, status):
     """
         Recursively draws polygons on the vertices of main figure drawn at the heading of the vertices until the shape
         is a triangle
@@ -69,20 +74,21 @@ def draw_polygon(start_point, start_heading, length, sides, status, color):
         :post: pos (0,0), heading (start_heading), down
         :return: sum of length of all sides of polygon
     """
-    vertices, headings, sum = draw_figure(start_point, start_heading, length, sides, status, color)
+    vertices, headings, sum = draw_figure(length, sides, status)
 
     if sides == 3:
         return sum
 
     sides = sides - 1
-    random_color = COLORS[sides]
     for x in range(len(headings)):
-        sum += draw_polygon(vertices[x], headings[x], length/2, sides, status, random_color)
+        turtle.setposition(vertices[x][0], vertices[x][1])
+        turtle.setheading(headings[x])
+        sum += draw_polygon(length/2, sides, status)
 
     return sum
 
 
-def draw_figure(start_point, start_heading, length, sides, status, color):
+def draw_figure(length, sides, status):
     """
         Draws polygon of sides and length specified in arguments and fills polygon with color based on value of status
         :pre: pos (0,0), heading (start_heading), up
@@ -92,22 +98,25 @@ def draw_figure(start_point, start_heading, length, sides, status, color):
     sum = 0
     vertices = []
     headings = []
-    turtle.goto(start_point[0],start_point[1])
-    turtle.setheading(start_heading)
+    offset = 0;
     turtle.down()
     if status == "fill":
         turtle.pensize(FILL_PEN_WIDTH)
-        turtle.fillcolor(color)
+        turtle.fillcolor(COLORS[sides]
+)
         turtle.begin_fill()
+        offset = 180
     elif status == "unfill":
         turtle.pensize(UNFILL_PEN_WIDTH)
-        turtle.pencolor(color)
+        turtle.pencolor(COLORS[sides]
+)
+        offset = 180
 
     angle = (360 / sides)
 
     for x in range(sides):
         vertices.append(turtle.position())
-        headings.append(turtle.heading())
+        headings.append(turtle.heading() + offset)
         turtle.forward(length)
         sum += length
         turtle.left(angle)
@@ -126,12 +135,13 @@ def write_name():
         :post: pos (0,0), heading (start_heading), down
         :return: None
     """
+    turtle.color('black')
     turtle.up()
-    turtle.setpos(-400,-350)
+    turtle.setpos(600,350)
     turtle.down()
     turtle.write("Aditi Shailendra Singhai")
     turtle.up()
-    turtle.setpos(-400, -400)
+    turtle.setpos(600, 400)
     turtle.down()
     turtle.write("Amit Shyam Jaisinghani")
     turtle.up()
@@ -149,8 +159,9 @@ def main():
     sides, status = take_input_from_the_user()
     init()
     turtle.tracer(0, 0)
-    print('Sum: ',draw_polygon(turtle.position(), turtle.heading(), SIDE_LENGTH, sides, status, COLORS[sides]))
+    print('Sum: ',draw_polygon(SIDE_LENGTH, sides, status))
     write_name()
+    turtle.ht()
     turtle.update()
     turtle.mainloop()
 
