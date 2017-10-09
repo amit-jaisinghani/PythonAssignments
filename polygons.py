@@ -23,9 +23,16 @@ NAME_2_START_POSITION = (600, 400)
 
 SIDE_LENGTH = 150
 
+SUM_OF_ALL_ANGLES_OF_POLYGON = 360
+OFFSET_OF_POLYGON = 180
+
 FILL_PEN_WIDTH = 2
 
+STATUS_FILL = 'fill'
+STATUS_UNFILL = 'unfill'
+
 COLORS = 'purple', 'grey', 'pink', '#f9e611', '#f9104a', 'orange', 'green', '#990109', '#d8c9ca'
+PEN_COLOR = 'black'
 
 
 def init():
@@ -62,8 +69,8 @@ def take_input_from_the_user():
         sys.exit(1)
 
     status = (sys.argv[2])
-    if status != 'fill' and status != 'unfill':
-        print("Usage: enter valid status [fill | unfill].")
+    if status != STATUS_FILL and status != STATUS_UNFILL:
+        print('Usage: enter valid status [', STATUS_FILL, ' | ', STATUS_UNFILL, '].')
         sys.exit(1)
 
     return sides, status
@@ -103,27 +110,24 @@ def draw_figure(length, sides, status):
     sum = 0
     vertices = []
     headings = []
-    offset = 0
     turtle.down()
-    if status == "fill":
+    if status == STATUS_FILL:
         turtle.pensize(FILL_PEN_WIDTH)
-        turtle.color("black", COLORS[sides])
+        turtle.color(PEN_COLOR, COLORS[sides])
         turtle.begin_fill()
-        offset = 180
-    elif status == "unfill":
+    elif status == STATUS_UNFILL:
         turtle.color(COLORS[sides])
-        offset = 140
 
-    angle = (360 / sides)
+    angle = (SUM_OF_ALL_ANGLES_OF_POLYGON / sides)
 
     for x in range(sides):
         vertices.append(turtle.position())
-        headings.append(turtle.heading() + offset)
+        headings.append(turtle.heading() + OFFSET_OF_POLYGON)
         turtle.forward(length)
         sum += length
         turtle.left(angle)
 
-    if status == "fill":
+    if status == STATUS_FILL:
         turtle.end_fill()
 
     turtle.up()
@@ -137,7 +141,7 @@ def write_name():
         :post: pos (0, 0), heading (east), up
         :return: None
     """
-    turtle.color('black')
+    turtle.color(PEN_COLOR)
     turtle.up()
     turtle.setpos(NAME_1_START_POSITION)
     turtle.down()
@@ -160,6 +164,7 @@ def main():
     """
     sides, status = take_input_from_the_user()
     init()
+    turtle.tracer(0, 0)
     print('Sum: ', draw_polygon(SIDE_LENGTH, sides, status))
     turtle.ht()
     turtle.update()
