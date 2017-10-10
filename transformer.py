@@ -14,21 +14,13 @@ STATUS_ENCRYPT = 'encrypt'
 STATUS_DECRYPT = 'decrypt'
 
 
-def init():
-    """
-        Takes user input for file name. Reads and handles file operations.
-        :return: messages_file, transformation_file
-    """
-    pass
-
-
 def user_data():
     """
         Takes user input regarding status. exits if the input is not proper.
         :return: status
     """
 
-    status = input("Do you want to encrypt or decrypt?").lower()
+    status = input("Do you want to encrypt or decrypt? ").lower()
     if status != STATUS_ENCRYPT and status != STATUS_DECRYPT:
         print("Usage: You need to enter only encrypt or decrypt : ")
         sys.exit(1)
@@ -54,23 +46,6 @@ def rotate(string, exponent):
     return string
 
 
-def rotate_decrypt(string, exponent):
-    """
-        rotates the string to left. It shifts number of exponent times.
-        For negative exponent the string shits right.
-        :return: result
-    """
-
-    length = len(string)
-    if exponent >= 0:
-        for x in range(exponent):
-            string = string[1:length] + string[0]
-    else:
-        for x in range(exponent, 0):
-            string = string[length - 1] + string[0:length - 1]
-    return string
-
-
 def shift_char(string, index, exponent):
     """
         shifts the letter at index forward one letter in the alphabet if the exponent is positive.
@@ -91,28 +66,6 @@ def shift_char(string, index, exponent):
             ascii_value = ascii_value - 1
             if ascii_value == 64:
                 ascii_value = 90
-    result = string[0: index] + chr(ascii_value) + string[index + 1: len(string)]
-    return result
-
-
-def shift_char_decrypt(string, index, exponent):
-    """
-        shifts the letter at index backward one letter in the alphabet if the exponent is positive.
-        shifts the letter at index forward one letter in the alphabet if the exponent is negative.
-        :return: result
-    """
-    c = string.find(index)
-    ascii_value = ord(c)
-    if exponent >= 0:
-        for x in range(exponent):
-            ascii_value = ascii_value - 1
-            if ascii_value == 64:
-                ascii_value = 90
-    else:
-        for x in range(exponent, 0):
-            ascii_value = ascii_value + 1
-            if ascii_value == 90:
-                ascii_value = 64
     result = string[0: index] + chr(ascii_value) + string[index + 1: len(string)]
     return result
 
@@ -180,15 +133,19 @@ def transform(messages_file, transformation_file, status):
         if message is None or message == '':
             sys.exit(-1)
 
-        operation = transformation.strip().upper()
-        if len(operation) > 1 and operation[1] == '(':
-            transformation_list = [operation[2], operation[4], operation[6]]
-            pass
+        if status == STATUS_ENCRYPT:
+            operation_list = transformation.strip().upper().split(";")
         else:
-            transformation_list = operation[1: len(operation)].split(',')
-        select_function(message, status, transformation[0], transformation_list)
+            operation_list = reversed(transformation.strip().upper().split(";"))
 
-        print(transformation_list)
+        for operation in operation_list:
+            if len(operation) > 1 and operation[1] == '(':
+                transformation_list = [operation[2], operation[4], operation[6]]
+            else:
+                transformation_list = operation[1: len(operation)].split(',')
+            message = select_function(message, status, operation[0], transformation_list)
+
+        print(message)
     pass
 
 
@@ -196,7 +153,7 @@ def select_function(message, status, operation, transformation_list):
     """
         Assigns values to index, exponent, group from transformation list.
         Calls appropriate function based on operation value and status.
-        :return: None
+        :return: encrypted/decrypted message
     """
 
     result = ""
@@ -213,28 +170,28 @@ def select_function(message, status, operation, transformation_list):
         index = int(transformation_list[1])
         exponent = int(transformation_list[2])
     else:
-        index = 0
+        index = 1
         exponent = 1
         group = 0
     if status == STATUS_ENCRYPT and operation == 'S':
         result = shift_char(message, index, exponent)
     elif status == STATUS_DECRYPT and operation == 'S':
-        result = shift_char_decrypt(message, index, exponent)
+        result = shift_char(message, index, exponent * -1)
     elif status == STATUS_ENCRYPT and operation == 'R':
         result = rotate(message, index)
     elif status == STATUS_DECRYPT and operation == 'R':
-        result = rotate_decrypt(message, index, exponent)
-    elif operation == 'D':
+        result = rotate(message, index * -1)
+    elif status == STATUS_ENCRYPT and operation == 'D':
         result = duplicate(message, index, exponent)
+    elif status == STATUS_DECRYPT and operation == 'D':
+        result = message
     elif operation == 'T':
         if group == 0:
             result = swap_letters(message, index, exponent)
         else:
             result = swap_group_of_letters(message, index, exponent, group)
 
-    print(result)
-
-    pass
+    return result
 
 
 def main():
@@ -248,12 +205,9 @@ def main():
     messages_file = None
     transformation_file = None
     try:
-        # messages_file_name = input("Please enter messages file name: ")
-        # transformation_file_name = input("Please enter transformation file name: ")
-        # status = user_data()
-        messages_file_name = "messages.txt"
-        transformation_file_name = "codes.txt"
-        status = "encrypt"
+        messages_file_name = input("Please enter messages file name: ")
+        transformation_file_name = input("Please enter transformation file name: ")
+        status = user_data()
 
         messages_file = open(messages_file_name)
         transformation_file = open(transformation_file_name)
