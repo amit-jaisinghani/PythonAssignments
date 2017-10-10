@@ -4,7 +4,7 @@ __author__ = 'asj8139,ass7436'
 Assignment 4: Secret Messages 
 Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
 
-This program 
+This program encodes and decodes secret messages in a file.
 
 """
 
@@ -14,7 +14,20 @@ STATUS_ENCRYPT = 'encrypt'
 STATUS_DECRYPT = 'decrypt'
 
 
+def init():
+    """
+        Takes user input for file name. Reads and handles file operations.
+        :return: messages_file, transformation_file
+    """
+    pass
+
+
 def user_data():
+    """
+        Takes user input regarding status. exits if the input is not proper.
+        :return: status
+    """
+
     status = input("Do you want to encrypt or decrypt?").lower()
     if status != STATUS_ENCRYPT and status != STATUS_DECRYPT:
         print("Usage: You need to enter only encrypt or decrypt : ")
@@ -23,6 +36,12 @@ def user_data():
 
 
 def rotate(string, exponent):
+    """
+        rotates the string to right. It shifts number of exponent times.
+        For negative exponent the string shits left.
+        :return: result
+    """
+
     length = len(string)
     if exponent >= 0:
         if exponent == 0:
@@ -36,6 +55,12 @@ def rotate(string, exponent):
 
 
 def rotate_decrypt(string, exponent):
+    """
+        rotates the string to left. It shifts number of exponent times.
+        For negative exponent the string shits right.
+        :return: result
+    """
+
     length = len(string)
     if exponent >= 0:
         for x in range(exponent):
@@ -47,6 +72,12 @@ def rotate_decrypt(string, exponent):
 
 
 def shift_char(string, index, exponent):
+    """
+        shifts the letter at index forward one letter in the alphabet if the exponent is positive.
+        shifts the letter at index backward one letter in the alphabet if the exponent is negative.
+        :return: result
+    """
+
     c = string[index]
     ascii_value = ord(c)
 
@@ -65,6 +96,11 @@ def shift_char(string, index, exponent):
 
 
 def shift_char_decrypt(string, index, exponent):
+    """
+        shifts the letter at index backward one letter in the alphabet if the exponent is positive.
+        shifts the letter at index forward one letter in the alphabet if the exponent is negative.
+        :return: result
+    """
     c = string.find(index)
     ascii_value = ord(c)
     if exponent >= 0:
@@ -82,6 +118,10 @@ def shift_char_decrypt(string, index, exponent):
 
 
 def duplicate(string, index, exponent):
+    """
+        duplicates the letter at index if the exponent is positive.
+        :return: result
+    """
     result = string
     if exponent >= 0:
         result = string[0: index] + (string[index] * exponent) + string[index: len(string)]
@@ -89,6 +129,11 @@ def duplicate(string, index, exponent):
 
 
 def swap_letters(string, i, j):
+    """
+        Swaps the letters at index i and index j if i < j.
+        :return: result
+    """
+
     result = string
     if i < j:
         result = ""
@@ -103,6 +148,12 @@ def swap_letters(string, i, j):
 
 
 def swap_group_of_letters(string, i, j, g):
+    """
+        Divides the string into g equal-sized groups of letters,
+        and then swaps the groups at index i and index j if i < j.
+        :return: result
+    """
+
     result = string
     length = int(len(string))
     if length % g == 0:
@@ -117,6 +168,12 @@ def swap_group_of_letters(string, i, j, g):
 
 
 def transform(messages_file, transformation_file, status):
+    """
+        Breaks the lines in transformation_file to get
+        operations and transformation list for every operation.
+        :return: None
+    """
+
     for transformation in transformation_file:
         message = messages_file.readline().strip().upper()
 
@@ -136,6 +193,12 @@ def transform(messages_file, transformation_file, status):
 
 
 def select_function(message, status, operation, transformation_list):
+    """
+        Assigns values to index, exponent, group from transformation list.
+        Calls appropriate function based on operation value and status.
+        :return: None
+    """
+
     result = ""
     if len(transformation_list) == 1 and transformation_list[0] != '':
         index = int(transformation_list[0])
@@ -175,6 +238,13 @@ def select_function(message, status, operation, transformation_list):
 
 
 def main():
+    """
+        The main function.
+        Takes user input.
+        Reads file.
+        Transform file according to status.
+        :return: None
+    """
     messages_file = None
     transformation_file = None
     try:
