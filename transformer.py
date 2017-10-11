@@ -31,7 +31,9 @@ def rotate(string, exponent):
     """
         rotates the string to right. It shifts number of exponent times.
         For negative exponent the string shits left.
-        :return: result
+        :param string: on which the operation is to be performed.
+        :param exponent: number of times string is to be rotated.
+        :return: result of the operation.
     """
 
     length = len(string)
@@ -50,7 +52,10 @@ def shift_char(string, index, exponent):
     """
         shifts the letter at index forward one letter in the alphabet if the exponent is positive.
         shifts the letter at index backward one letter in the alphabet if the exponent is negative.
-        :return: result
+        :param string: on which the operation is to be performed.
+        :param index: position of character which is to be shifted.
+        :param exponent: number of times ascii value of character is to be increased.
+        :return: result of the operation
     """
 
     c = string[index]
@@ -73,7 +78,10 @@ def shift_char(string, index, exponent):
 def duplicate(string, index, exponent):
     """
         duplicates the letter at index if the exponent is positive.
-        :return: result
+        :param string: on which the operation is to be performed.
+        :param index: position of character which is to be duplicated.
+        :param exponent: number of time character is to be duplicated.
+        :return: result of the operation
     """
     result = string
     if exponent >= 0:
@@ -81,10 +89,27 @@ def duplicate(string, index, exponent):
     return result
 
 
+def decrypt_duplicate(string, index, exponent):
+    """
+        removes duplicate letter at index if the exponent is positive.
+        :param string: on which the operation is to be performed.
+        :param index: position of character which is to be non-duplicated.
+        :param exponent: number of time character is to be non-duplicated.
+        :return: result of the operation
+    """
+    result = string
+    if exponent >= 0:
+        result = string[0: index] + string[index + exponent: len(string)]
+    return result
+
+
 def swap_letters(string, i, j):
     """
         Swaps the letters at index i and index j if i < j.
-        :return: result
+        :param string: on which the operation is to be performed.
+        :param i: index one which is to be swapped.
+        :param j: index two which is to be swapped.
+        :return: result of the operation.
     """
 
     result = string
@@ -104,7 +129,12 @@ def swap_group_of_letters(string, i, j, g):
     """
         Divides the string into g equal-sized groups of letters,
         and then swaps the groups at index i and index j if i < j.
-        :return: result
+
+        :param string: on which the operation is to be performed.
+        :param i: index one which is to be swapped.
+        :param j: index two which is to be swapped.
+        :param g: number of equal-sized groups of letters.
+        :return: result of the operation.
     """
 
     result = string
@@ -120,10 +150,43 @@ def swap_group_of_letters(string, i, j, g):
     return result
 
 
+def key_encryption(message, factor):
+    """
+        Encrypts the message with the key, each character is encoded with key value in increment order.
+        If key is exhausted, it is used from start again. And key can be changed,
+        but it should remain constant for both encryption and decryption.
+        Operation String: K
+        Example: For string "MAX" encryption with key [2,3,4] is "ODB"
+
+        :param message: on which the operation is to be performed.
+        :param factor: used for encryption and decryption. 1 for encryption and -1 for decryption.
+        :return: result of the operation
+    """
+    key = [2, 3, 4]
+    key_index = 0
+    result = ""
+    for ch in message:
+        ascii_value = ord(ch) + (key[key_index] * factor)
+        if factor == 1 and ascii_value > 90:
+            ascii_value -= 26
+        if factor == -1 and ascii_value < 65:
+            ascii_value += 26
+        result += chr(ascii_value)
+        key_index += 1
+        if key_index == len(key):
+            key_index = 0
+    return result
+
+
 def transform(messages_file, transformation_file, status):
     """
         Breaks the lines in transformation_file to get
         operations and transformation list for every operation.
+
+        :param messages_file: file containing messages.
+        :param transformation_file: file containing transformations.
+        :param status: user choice amongst encrypt and decrypt.
+
         :return: None
     """
 
@@ -150,9 +213,17 @@ def transform(messages_file, transformation_file, status):
 
 
 def select_function(message, status, operation, transformation_list):
+
     """
+
         Assigns values to index, exponent, group from transformation list.
         Calls appropriate function based on operation value and status.
+
+        :param message: String which is to be encrypted or decrypted.
+        :param status: user choice amongst encrypt and decrypt.
+        :param operation: character indicating operation to be performed on message.
+        :param transformation_list: parameter list of operation.
+
         :return: encrypted/decrypted message
     """
 
@@ -184,7 +255,11 @@ def select_function(message, status, operation, transformation_list):
     elif status == STATUS_ENCRYPT and operation == 'D':
         result = duplicate(message, index, exponent)
     elif status == STATUS_DECRYPT and operation == 'D':
-        result = message
+        result = decrypt_duplicate(message, index, exponent)
+    elif status == STATUS_ENCRYPT and operation == 'K':
+        result = key_encryption(message, 1)
+    elif status == STATUS_DECRYPT and operation == 'K':
+        result = key_encryption(message, -1)
     elif operation == 'T':
         if group == 0:
             result = swap_letters(message, index, exponent)
