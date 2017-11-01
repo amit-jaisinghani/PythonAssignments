@@ -1,10 +1,4 @@
-__author__ = 'asj8139'
 
-"""
-Author: Amit Shyam Jaisinghani
-
-This is a program which draws concentric squares from (0,0) and (50,50)
-"""
 
 import turtle
 import math
@@ -15,6 +9,7 @@ WINDOW_HEIGHT = 400
 
 # global constant for left and right margin of an alphabet
 MARGIN = 10
+
 
 def init():
     """
@@ -32,6 +27,7 @@ def init():
     turtle.title('squares')
     pass
 
+
 def drawSquare():
     turtle.setheading(0)
     turtle.down()
@@ -42,6 +38,7 @@ def drawSquare():
     turtle.forward(50)
     turtle.up()
     pass
+
 
 def main():
     """

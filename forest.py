@@ -315,9 +315,9 @@ def main():
 
     wall_height = draw_night_scene()
     turtle.onscreenclick(bind_day_scene(wall_height))
-    turtle.onkeypress(quit,'Return')
+    turtle.onkeypress(quit, 'Return')
     turtle.listen()
-    turtle.setposition(0,0)
+    turtle.setposition(0, 0)
     turtle.hideturtle()
     turtle.mainloop()
 
