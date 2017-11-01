@@ -1,12 +1,15 @@
-__author__ = 'asj8139'
+__author__ = 'asj8139','ass7436'
 
 """
-Author: Amit Shyam Jaisinghani
+Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
 
-This is a program 
+This is a program represnts a DNA strand as a linked list 
+on which the following operations like splicing, snipping and joining can be performed.
 """
 
-
+"""
+A module that represents "DNA" in the dnalist.
+"""
 class DNA:
     __slots__ = "gene", "link"
 
