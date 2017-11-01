@@ -128,6 +128,13 @@ class DNAList:
             self.rear = start
 
     def replace(self, repstr, other):
+        """
+        This function finds the string repstr as a subsequence of
+         the list abd replace it with the list given by other.
+        :param repstr: String which is to be replaced.
+        :param other: replaced by this other list.
+        :return: None
+        """
         node = self.front
         if node is not None:
             firstNode = None
