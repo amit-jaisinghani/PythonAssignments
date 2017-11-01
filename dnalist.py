@@ -10,6 +10,8 @@ on which the following operations like splicing, snipping and joining can be per
 """
 A module that represents "DNA" in the dnalist.
 """
+
+
 class DNA:
     __slots__ = "gene", "link"
 
@@ -80,6 +82,7 @@ class DNAList:
                     self.front = self.front.link
                 else:
                     start.link = cursor.link
+                self.size -= 1
             count += 1
             if count == i2:
                 break
@@ -124,7 +127,10 @@ print(dna.size)
 dna.join(DNAList(" @Rochester"))
 print(dna)
 print(dna.size)
-dna.snip(2, 22)
+print(dna.size)
+dna.snip(0, 22)
 print(dna)
 print(dna.front)
 print(dna.rear)
+print(dna.size)
+
