@@ -16,6 +16,11 @@ class DNA:
     __slots__ = "gene", "link"
 
     def __init__(self, gene, link=None):
+        """
+        Construct a DNA instance.
+        :param gene: Gene(value) of the DNA
+        :param link: Points to the next node.
+        """
         self.gene = gene
         self.link = link
         pass
@@ -29,6 +34,11 @@ class DNAList:
     __slots__ = "front", "rear", "size"
 
     def __init__(self, gene=''):
+        """
+        Initializes a DNA strand.
+        If the gene is not passed it is an empty string.
+        :param gene: Gene(value) of the DNA
+        """
         self.front = None
         self.rear = None
         self.size = 0
@@ -37,6 +47,12 @@ class DNAList:
         pass
 
     def append(self, ch):
+        """
+        Takes a single character and extends the list with a node that represents
+        this character.
+        :param ch:  character which is to be appended.
+        :return: None
+        """
         node = DNA(ch)
         if self.is_empty():
             self.front = node
@@ -47,16 +63,29 @@ class DNAList:
         self.size += 1
         pass
 
-    def join(self, dna_list):
+    def join(self, other):
+        """
+        This function takes another DNAList and adds it to the end of the list.
+        :param other: another DNAList
+        :return: None
+        """
         if self.is_empty():
-            self.front = dna_list.front
-            self.rear = dna_list.rear
+            self.front = other.front
+            self.rear = other.rear
         else:
-            self.rear.link = dna_list.front
-            self.rear = dna_list.rear
-        self.size += dna_list.size
+            self.rear.link = other.front
+            self.rear = other.rear
+        self.size += other.size
+        pass
 
     def splice(self, ind, other):
+        """
+        This function inserts the other list into the list immediately
+        after the ind'th character of the list.
+        :param ind: index into the list.
+        :param other: another DNAList which is to be inserted.
+        :return: None
+        """
         assert ind >= 0, "Index out of bounds"
         n = self.front
         for x in range(ind):
@@ -70,6 +99,12 @@ class DNAList:
         self.size += other.size
 
     def snip(self, i1, i2):
+        """
+        this function removes a portion of the gene as specified by i1 inclusive and i2 exclusive.
+        :param i1: start position of the list (inclusive)
+        :param i2: end position of the list (exclusive)
+        :return: None
+        """
         assert i1 >= 0 and i2 <= self.size, "Index out of bounds"
         count = 0
         cursor = self.front
@@ -93,6 +128,10 @@ class DNAList:
             self.rear = start
 
     def copy(self):
+        """
+        Makes new list with the same contents as the list called upon.
+        :return: new list with the same contents as the list called upon.
+        """
         copy_list = DNAList()
         cursor = self.front
         while cursor is not None:
@@ -101,9 +140,18 @@ class DNAList:
         return copy_list
 
     def is_empty(self):
+        """
+        checks if the list is empty.
+        :return: true if the list is empty.
+                 false if the list is not empty.
+        """
         return self.front is None
 
     def __str__(self):
+        """
+        Gives value of a string with the contents of the nodes in string format.
+        :return: value of a string with the contents of the nodes
+        """
         value = ""
         cursor = self.front
         while cursor is not None:
@@ -111,9 +159,6 @@ class DNAList:
             cursor = cursor.link
         return value
 
-
-# empty = DNAList()
-# empty.snip(0, 0)
 
 dna = DNAList("Hl")
 other = DNAList("el")
