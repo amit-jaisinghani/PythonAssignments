@@ -67,10 +67,27 @@ class DNAList:
             self.rear = other.rear
         self.size += other.size
 
-    # def snip(self, i1, i2):
-    #     assert i1 >= 0 and i2 < self.size, "Index out of bounds"
-    #     count = 0
-    #     cursor = self.front
+    def snip(self, i1, i2):
+        assert i1 >= 0 and i2 <= self.size, "Index out of bounds"
+        count = 0
+        cursor = self.front
+        start = cursor
+        while cursor is not None:
+            if count < i1:
+                start = cursor
+            else:
+                if i1 == 0:
+                    self.front = self.front.link
+                else:
+                    start.link = cursor.link
+            count += 1
+            if count == i2:
+                break
+            cursor = cursor.link
+        if self.front is None:
+            self.rear = None
+        elif i2 == self.size:
+            self.rear = start
 
     def copy(self):
         copy_list = DNAList()
@@ -95,12 +112,19 @@ class DNAList:
 # empty = DNAList()
 # empty.snip(0, 0)
 
-# dna = DNAList("Hl")
-# other = DNAList("el")
-# dna.splice(0, other)
-# dna.splice(3, DNAList("Raiser"))
-# dna.append("x")
-# print(dna.size)
-# print(dna)
-# print(dna.copy())
-# dna.join(DNAList("Raiser"))
+dna = DNAList("Hl")
+other = DNAList("el")
+dna.splice(0, other)
+dna.splice(3, DNAList("Raiser"))
+dna.append("x")
+print(dna.size)
+print(dna)
+print(dna.copy())
+print(dna.size)
+dna.join(DNAList(" @Rochester"))
+print(dna)
+print(dna.size)
+dna.snip(2, 22)
+print(dna)
+print(dna.front)
+print(dna.rear)
