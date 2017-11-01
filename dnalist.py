@@ -127,6 +127,46 @@ class DNAList:
         elif i2 == self.size:
             self.rear = start
 
+    def replace(self, repstr, other):
+        node = self.front
+        if node is not None:
+            firstNode = None
+            lastNode = None
+            count = 0
+            found = False
+            while count < len(repstr):
+                if node is None:
+                    break
+                if node.gene == repstr[count]:
+                    if count == 0:
+                        firstNode = node
+                    count = count + 1
+                    found = True
+                    node = node.link
+                    if count == (len(repstr) - 1):
+                        lastNode = node
+                        break;
+                if not (node.gene == repstr[count]):
+                    if count>0:
+                        count = 0
+                        found = False
+                        continue
+                    else:
+                        found = False
+                        node = node.link
+        if found:
+            prevNode = None
+            currentNode = self.front
+            while currentNode != firstNode:
+                prevNode = currentNode
+                currentNode = currentNode.link
+            self.size += (other.size - len(repstr))
+            other.rear.link = lastNode.link
+            prevNode.link = other.front
+            if lastNode == self.rear:
+                self.rear = other.rear
+
+
     def copy(self):
         """
         Makes new list with the same contents as the list called upon.
@@ -158,24 +198,3 @@ class DNAList:
             value += cursor.gene
             cursor = cursor.link
         return value
-
-
-dna = DNAList("Hl")
-other = DNAList("el")
-dna.splice(0, other)
-dna.splice(3, DNAList("Raiser"))
-dna.append("x")
-print(dna.size)
-print(dna)
-print(dna.copy())
-print(dna.size)
-dna.join(DNAList(" @Rochester"))
-print(dna)
-print(dna.size)
-print(dna.size)
-dna.snip(0, 22)
-print(dna)
-print(dna.front)
-print(dna.rear)
-print(dna.size)
-
