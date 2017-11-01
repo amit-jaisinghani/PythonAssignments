@@ -1,3 +1,10 @@
+__author__ = 'asj8139','ass7436'
+
+"""
+Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
+
+This is a program executes test cases for dnaList
+"""
 from dnalist import DNAList
 
 
