@@ -16,7 +16,8 @@ class DNA:
     __slots__ = "gene", "link"
 
     def __init__(self, gene, link=None):
-        self.gene = gene
+        assert len(str(gene)) == 1, "More than 1 character"
+        self.gene = str(gene)
         self.link = link
         pass
 
@@ -32,11 +33,15 @@ class DNAList:
         self.front = None
         self.rear = None
         self.size = 0
+        if gene is None:
+            return
         for x in gene:
             self.append(x)
         pass
 
     def append(self, ch):
+        if ch is None:
+            return
         node = DNA(ch)
         if self.is_empty():
             self.front = node
