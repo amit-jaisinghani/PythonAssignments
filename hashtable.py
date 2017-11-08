@@ -96,7 +96,7 @@ def main():
     """
     generate_stats("The beginnings of nature control.txt")
 
-    generate_stats("The Family on Wheels.txt")
+    # generate_stats("The Family on Wheels.txt")
 
     # generate_stats("dictionary.txt")
     pass
