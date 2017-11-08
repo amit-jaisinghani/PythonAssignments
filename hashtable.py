@@ -1,6 +1,17 @@
 from hashmap import Hashmap
 import re
 
+__author__ = 'asj8139,ass7436'
+
+"""
+Assignment 7: Hashing
+Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
+
+This program is a testing environment for  testing the
+two hash functions as well as Python's built-in
+hashfunction over three different maximum loadfactors
+and over three different files.
+"""
 
 def add_word(hash_map, word):
     '''
@@ -76,12 +87,18 @@ def generate_stats(file_name):
 
 
 def main():
+    """
+    The main function.
+
+    tests the file using different hash function and max loads.
+
+    :return: None
+    """
     generate_stats("The beginnings of nature control.txt")
 
     generate_stats("The Family on Wheels.txt")
 
-    generate_stats("web2.txt")
-
+    # generate_stats("dictionary.txt")
     pass
 
 
