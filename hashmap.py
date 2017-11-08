@@ -5,6 +5,8 @@ import re
 Entry = namedtuple('Entry', ('key', 'value'))
 
 '''
+Author: Amit Shyam Jaisinghani
+
 To make sure that the DELETED sentinel does not match
 anything we actually want to have in the table, make it
 a unique (content-free!) object.
@@ -134,17 +136,20 @@ class Hashmap:
 
     def hash_func(self, key):
         '''
-        Not using Python's built in hash function here since we want to
-        have repeatable testing...
-        However it is terrible.
-        Assumes keys have a len() though...
+        Using Python's built in hash function here
         :param key: Key to store
         :return: Hash value for that key
         '''
-        # if we want to switch to Python's hash function, uncomment this:
         return hash(key)
 
     def hash_func_ord(self, key):
+        '''
+        calculates hash value using ascii value of every character
+        and multiplied by a factor.
+        :param key: Key to store
+        :return: Hash value for that key
+        '''
+
         hash_value = 0
         count = 1
         for x in key:
@@ -153,6 +158,12 @@ class Hashmap:
         return hash_value
 
     def hash_func_unique_ascii(self, key):
+        '''
+        calculates hash value based on every unique ascii value in the word.
+        :param key: Key to store
+        :return: Hash value for that key
+        '''
+
         list_characters = []
         list_value = []
         for ch in key:
@@ -222,6 +233,14 @@ def testMap():
 
 
 def add_word(hash_map, word):
+    '''
+    adds new word to the hash_map
+    if the word already exists in the hash_map,
+    then its value is increased.
+    :param hash_map: in which the words are to be added.
+    :param word: which is to be added to the hash_map
+    :return: None
+    '''
     if word == '':
         return
     try:
@@ -232,6 +251,11 @@ def add_word(hash_map, word):
 
 
 def find_max_repeating_word(hash_map):
+    '''
+    finds word in hash_map which has repeated maximum number of times.
+    :param hash_map: from which maximum repeating word is to be found.
+    :return: word and word_count
+    '''
     word = None
     max = 0
     for entry in hash_map.table:
@@ -243,12 +267,19 @@ def find_max_repeating_word(hash_map):
 
 
 def get_stats(file_name, max_load, hash_function_choice):
+    '''
+
+    :param file_name: in which the word with maximum frequency is to be found
+    :param max_load: capacity of hashmap
+    :param hash_function_choice: which hashing function is to be used
+    :return: None
+    '''
     try:
         file = open(file_name)
     except FileNotFoundError:
         print("File not found. Please check file name and path.")
         return
-    hash_map = Hashmap(10, max_load, hash_function_choice)
+    hash_map = Hashmap(10000, max_load, hash_function_choice)
     for line in file:
         words = re.split('\W+', line)
         for word in words:
@@ -261,6 +292,11 @@ def get_stats(file_name, max_load, hash_function_choice):
 
 
 def generate_stats(file_name):
+    '''
+    generates statistics for different hashing functions and load values
+    :param file_name: on which statistics is to be performed
+    :return: None
+    '''
     loads = [0.7, 0.8, 0.9]
 
     for hash_algo in range(1, 4):
