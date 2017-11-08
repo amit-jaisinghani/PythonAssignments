@@ -49,7 +49,7 @@ def get_stats(file_name, max_load, hash_function_choice):
     except FileNotFoundError:
         print("File not found. Please check file name and path.")
         return
-    hash_map = Hashmap(10000, max_load, hash_function_choice)
+    hash_map = Hashmap(100000, max_load, hash_function_choice)
     for line in file:
         words = re.split('\W+', line)
         for word in words:
@@ -76,11 +76,12 @@ def generate_stats(file_name):
 
 
 def main():
-    # generate_stats("The beginnings of nature control.txt")
+    generate_stats("The beginnings of nature control.txt")
 
-    # generate_stats("The Family on Wheels.txt")
+    generate_stats("The Family on Wheels.txt")
 
-    generate_stats("dictionary.txt")
+    generate_stats("web2.txt")
+
     pass
 
 

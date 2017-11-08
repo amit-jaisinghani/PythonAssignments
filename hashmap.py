@@ -143,41 +143,29 @@ class Hashmap:
 
     def hash_func_ord(self, key):
         '''
-        calculates hash value using ascii value of every character
-        and multiplied by a factor.
+        calculates hash value using ascii value of every character and left shift operation
         :param key: Key to store
         :return: Hash value for that key
         '''
 
         hash_value = 0
-        count = 1
         for x in key:
-            hash_value = hash_value + ord(x)*count
-            count = count + 1
+            ascii_value = ord(x)
+            hash_value = ascii_value + (hash_value << 16) - hash_value
         return hash_value
 
     def hash_func_unique_ascii(self, key):
         '''
-        calculates hash value based on every unique ascii value in the word.
+        calculates hash value based on every unique ascii value in the word and left,
+         right and XOR operation.
         :param key: Key to store
         :return: Hash value for that key
         '''
 
-        list_characters = []
-        list_value = []
-        for ch in key:
-            try:
-                index = list_characters.index(ch)
-                list_value[index] += 1
-            except ValueError:
-                list_characters.append(ch)
-                list_value.append(ord(ch))
-
-        value = 0
-        for ascii_frequency_value in list_value:
-            value += ascii_frequency_value
-
-        return value
+        hash_value = 0
+        for x in key:
+            hash_value = ((hash_value << 13) ^ (hash_value >> 7)) ^ ord(x)
+        return hash_value
 
 
 def printMap(map):
