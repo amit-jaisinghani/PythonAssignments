@@ -14,15 +14,16 @@ a unique (content-free!) object.
 class _delobj: pass
 DELETED = Entry(_delobj(),None)
 
-TRIVIAL = 1
+INBUILT = 1
 ORD = 2
 UNIQUE_ASCII = 3
+
 
 class Hashmap:
 
     __slots__ = 'table','numkeys','cap','maxload','probe','collision','hashfunction'
 
-    def __init__(self,initsz=100,maxload=0.7, hashfunction = TRIVIAL ):
+    def __init__(self, initsz=100, maxload=0.7, hashfunction=INBUILT):
         '''
         Creates an open-addressed hash map of given size and maximum load factor
         :param initsz: Initial size (default 100)
@@ -33,41 +34,34 @@ class Hashmap:
         self.numkeys = 0
         self.maxload = maxload
         self.probe = 0
-        self.collision = 0;
+        self.collision = 0
         self.hashfunction = hashfunction
 
-    def put(self,key,value):
+    def put(self, key, value):
         '''
         Adds the given (key,value) to the map, replacing entry with same key if present.
         :param key: Key of new entry
         :param value: Value of new entry
         '''
-        if self.hashfunction == TRIVIAL:
-            index = self.hash_func(key) % self.cap
-        elif self.hashfunction == ORD:
-            index = self.hash_func_ord(key) % self.cap
-        else:
-            index = self.hash_func_unique_ascii(key) % self.cap
 
+        index = self.get_hash_key(key)
+
+        is_collision_counted = False
         self.probe += 1
-
-        if self.table[index] is not None and self.table[index] != DELETED:
-            self.collision += 1
-            self.probe += 1
-            index += 1
-
         while self.table[index] is not None and \
                         self.table[index] != DELETED and \
                         self.table[index].key != key:
+            index += 1
             if index == len(self.table):
                 index = 0
-            index += 1
-
+            self.probe += 1
+            if not is_collision_counted:
+                self.collision += 1
+                is_collision_counted = True
         if self.table[index] is None:
             self.numkeys += 1
-
-        self.table[index] = Entry(key,value)
-        if self.numkeys/self.cap > self.maxload:
+        self.table[index] = Entry(key, value)
+        if self.numkeys / self.cap > self.maxload:
             # rehashing
             oldtable = self.table
             # refresh the table
@@ -77,7 +71,7 @@ class Hashmap:
             # put items in new table
             for entry in oldtable:
                 if entry is not None:
-                    self.put(entry[0],entry[1])
+                    self.put(entry[0], entry[1])
 
     def remove(self, key):
         '''
@@ -85,19 +79,12 @@ class Hashmap:
         :param key: Key of item to remove
         :return: Value of given key
         '''
-        if self.hashfunction == TRIVIAL:
-            index = self.hash_func(key) % self.cap
-        elif self.hashfunction == ORD:
-            index = self.hash_func_ord(key) % self.cap
-        else:
-            index = self.hash_func_unique_ascii(key) % self.cap
+        index = self.get_hash_key(key)
 
-        self.probe += 1
         while self.table[index] is not None and self.table[index].key != key:
             index += 1
             if index == len(self.table):
                 index = 0
-            self.probe += 1
         if self.table[index] is not None:
             self.table[index] = DELETED
 
@@ -107,12 +94,9 @@ class Hashmap:
         :param key: Key to look up
         :return: Value (or KeyError if key not present)
         '''
-        if self.hashfunction == TRIVIAL:
-            index = self.hash_func(key) % self.cap
-        elif self.hashfunction == ORD:
-            index = self.hash_func_ord(key) % self.cap
-        else:
-            index = self.hash_func_unique_ascii(key) % self.cap        self.probe += 1
+        index = self.get_hash_key(key)
+
+        self.probe += 1
         while self.table[index] is not None and self.table[index].key != key:
             index += 1
             if index == self.cap:
@@ -129,12 +113,8 @@ class Hashmap:
         :param key: Key to look up
         :return: Whether key is present (boolean)
         '''
-        if self.hashfunction == TRIVIAL:
-            index = self.hash_func(key) % self.cap
-        elif self.hashfunction == ORD:
-            index = self.hash_func_ord(key) % self.cap
-        else:
-            index = self.hash_func_unique_ascii(key) % self.cap
+        index = self.get_hash_key(key)
+
         self.probe += 1
         while self.table[index] is not None and self.table[index].key != key:
             index += 1
@@ -142,6 +122,15 @@ class Hashmap:
                 index = 0
             self.probe += 1
         return self.table[index] is not None
+
+    def get_hash_key(self, key):
+        if self.hashfunction == INBUILT:
+            index = self.hash_func(key) % self.cap
+        elif self.hashfunction == ORD:
+            index = self.hash_func_ord(key) % self.cap
+        else:
+            index = self.hash_func_unique_ascii(key) % self.cap
+        return index
 
     def hash_func(self, key):
         '''
@@ -153,15 +142,14 @@ class Hashmap:
         :return: Hash value for that key
         '''
         # if we want to switch to Python's hash function, uncomment this:
-        # return hash(key)
-        return len(key)
+        return hash(key)
 
     def hash_func_ord(self, key):
         hash_value = 0
-        count = 0
+        count = 1
         for x in key:
             hash_value = hash_value + ord(x)*count
-            count = count+1
+            count = count + 1
         return hash_value
 
     def hash_func_unique_ascii(self, key):
@@ -234,6 +222,8 @@ def testMap():
 
 
 def add_word(hash_map, word):
+    if word == '':
+        return
     try:
         value = hash_map.get(word)
         hash_map.put(word, value + 1)
@@ -252,27 +242,40 @@ def find_max_repeating_word(hash_map):
     return word, max
 
 
-def generate_stats(file_name):
+def get_stats(file_name, max_load, hash_function_choice):
     try:
         file = open(file_name)
     except FileNotFoundError:
         print("File not found. Please check file name and path.")
         return
-
-    hash_map = Hashmap(10)
+    hash_map = Hashmap(10, max_load, hash_function_choice)
     for line in file:
         words = re.split('\W+', line)
         for word in words:
             word = word.lower()
             add_word(hash_map, word)
-    printMap(hash_map)
-    print(find_max_repeating_word(hash_map))
+    word, max = find_max_repeating_word(hash_map)
+    print("Word ", word, " has max occurrence of ", max)
     print("#Probe - ", hash_map.probe, "#Collision - ", hash_map.collision)
     return
 
 
+def generate_stats(file_name):
+    loads = [0.7, 0.8, 0.9]
+
+    for hash_algo in range(1, 4):
+        for load in loads:
+            print("File - ", file_name, " max load - ", load, " algo - ", hash_algo)
+            get_stats(file_name, load, hash_algo)
+
+
 def main():
-    generate_stats("data.txt")
+    # generate_stats("The beginnings of nature control.txt")
+
+    # generate_stats("The Family on Wheels.txt")
+
+    generate_stats("dictionary.txt")
+
     pass
 
 
