@@ -1,6 +1,5 @@
 __author__ = 'zjb'
 from collections import namedtuple
-import re
 
 Entry = namedtuple('Entry', ('key', 'value'))
 

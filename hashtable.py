@@ -1,3 +1,7 @@
+from hashmap import Hashmap
+import re
+
+
 def add_word(hash_map, word):
     '''
     adds new word to the hash_map
