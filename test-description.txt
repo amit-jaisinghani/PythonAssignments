@@ -1,0 +1,50 @@
+Test case 1:
+This case is general case which checks graph is building properly and whether starting paint ball with max color is
+correct one. And check cows that were painted by best paint ball and colors they were painted with.
+Expected output:
+Field of Dreams
+---------------
+BLUE connectedTo: ['Daisy', 'GREEN', 'Babe', 'RED', 'Fauntleroy']
+Daisy connectedTo: []
+GREEN connectedTo: ['Daisy']
+Babe connectedTo: []
+RED connectedTo: ['Fauntleroy', 'Milka']
+Fauntleroy connectedTo: []
+Milka connectedTo: []
+
+Beginning simulation...
+Triggering  BLUE  paint ball...
+Daisy is painted BLUE!
+GREEN paint ball is triggered by BLUE paint ball
+Daisy is painted GREEN!
+Babe is painted BLUE!
+RED paint ball is triggered by BLUE paint ball
+Fauntleroy is painted RED!
+Milka is painted RED!
+Fauntleroy is painted BLUE!
+Triggering  GREEN  paint ball...
+Daisy is painted GREEN!
+Triggering  RED  paint ball...
+Fauntleroy is painted RED!
+Milka is painted RED!
+
+Results:
+Triggering the BLUE paint ball is the best choice with 6 total points on the cows:
+Daisy ['BLUE', 'GREEN']
+Babe ['BLUE']
+Fauntleroy ['RED', 'BLUE']
+Milka ['RED']
+
+Output is per expectation.
+
+
+Test case 2:
+This case for infinite loop. 3 paint balls - RED, GREEN, BLUE are in each other's blast radius. Here we will check
+if paint balls triggering logic is going in infinite loop or not.
+Result: Infinite loop is avoided. Output is as expected.
+
+
+Test case 3:
+This case checks if all cows are out of blast radius.
+Result:
+As expected, no cows were painted.
