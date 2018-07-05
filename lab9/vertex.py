@@ -1,7 +1,7 @@
-__author__ = 'asj8139'
+__author__ = 'asj8139,ass7436'
 
 """
-Author: Amit Shyam Jaisinghani
+Author: Amit Shyam Jaisinghani, Aditi Shailendra Singhai
 
 An implementation of a vertex as part of a graph.
 

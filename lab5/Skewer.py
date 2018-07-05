@@ -1,67 +1,147 @@
-from Food import Food
-
-__author__ = 'asj8139'
+__author__ = 'asj8139,ass7436'
 
 """
-Author: Amit Shyam Jaisinghani
+A module for representing the skewer functionality.
 
-This is a program 
+Author: Sean Strout @ RITCS
 """
+
+from food import Food
+from kebab_graphics import SkewerUI
+from kebab_spot import KebabSpot
+from skewer_exception import SkewerException
 
 
 class Skewer:
-    __slots__ = "top"
+    """
+    Class: Skewer
+    Description: This class receives commands from Kabob and
+        works with the KebabSpot class to represent a shish-kabob
+        of food items on a skewer.
+    """
 
-    def __init__(self):
+    __slots__ = "top", "cap", "ui"
+
+    def __init__(self, capacity):
+        """
+        Construct a Skewer instance.
+        :param capacity: the maximum number of items it can hold
+        :exception SkewerException: a capacity less than 1 was specified.
+        """
+        
+        if capacity < 1:
+            raise SkewerException("Cannot create skewer!")
+
         self.top = None
+        self.cap = capacity
+        self.ui = SkewerUI(self.cap)
 
-    def __str__(self):
-        result = "Skewer["
-        n = self.top
-        while n is not None:
-            result += " " + str(n) + "\n"
-            n = n.link
-        result += " ]"
-        return result
+    def add(self, name):
+        """
+        Add a food item to the skewer
+        :param name: the string name of the food item
+        :exception SkewerException: item could not be added.
+        :return None
+        """
+        
+        if not self.top or self.top.size() < self.cap:
+            self.top = KebabSpot( Food(name), self.top )
+            self.ui.add(self.top)
+        else:
+            raise SkewerException("Cannot add item to a full skewer!")
+            
+    def front(self):
+        """
+        Gets the name of the front item on the skewer.
+        :exception SkewerException: no item was on the skewer
+        :return the name of the food item (string) on the front
+        """
+        
+        if not self.top or self.size() == 0: 
+            raise SkewerException("Cannot get item from an empty skewer!")
+        return self.top.get_item().name
+    
+    def remove(self):
+        """
+        Remove the front item from the skewer.
+        :exception: SkewerException: no item was on the skewer
+        :return None
+        """
+        
+        if not self.top or self.size() == 0:
+            raise SkewerException("Cannot get item from an empty skewer!")
+        self.ui.remove()
+        self.top = self.top.next
 
-    def is_empty(self):
-        return self.top is None
+    def size(self):
+        """
+        Get the number of elements on the skewer.
+        :return the number of elements (int)
+        """
 
-    def push(self, food_name, is_vegetable, calories):
-        self.top = Food(food_name, is_vegetable, calories, self.top)
+        if not self.top:
+            return 0
+        else:
+            return self.top.size()
+    
+    def capacity(self):
+        """
+        Get the maximum capacity of the skewer.
+        :return the capacity (int)
+        """
 
-    def pop(self):
-        assert not self.is_empty(), "Pop from empty skewer"
-        self.top = self.top.link
+        return self.cap
 
-    def peek(self):
-        assert not self.is_empty(), "peek on empty skewer"
-        return self.top
+    def close(self):
+        """
+        On destruction, close the graphical window.
+        :return None
+        """
 
-    def is_veggie(self):
-        only_veggies = True
-        if not self.is_empty():
-            n = self.top
-            while n is not None:
-                if not n.veggie:
-                    only_veggies = False
-                    break
-                n = n.link
-            return only_veggies
+        self.ui.close()
 
+    def is_vegan( self ):
+        """
+        Are there only vegetables on the skewer?
+        :return True if there are only veggies on the skewer, False if not
+        """
 
-def main():
-    s = Skewer()
-    s.push("potato", True, 100)
-    s.push("Onion", True, 10)
-    s.push("Chicken", False, 1500)
-    print(s)
-    print("Checking all veg --")
-    print("is veg? ", s.is_veggie())
-    s.pop()
-    print(s)
-    print("is veg? ", s.is_veggie())
+        if not self.top:
+            return True
+        else:
+            return self.top.is_vegan()
 
+    def has(self, name):
+        """
+        Is a particular food item on the skewer?
+        :param name: the name (string) of the food item to search for
+        :return True if the item is on the skewer, False if not.
+        """
+        
+        if not self.top:
+            return False
+        else:
+            return self.top.has( name )
 
-if __name__ == "__main__":
-    main()
+    def total_calorie_count(self):
+        """
+        Get the total calories count of food items on the skewer.
+        :return total calories
+        """
+
+        if self.top is None:
+            return 0
+        else:
+            return self.top.total_calorie_count()
+
+    def __str__( self ):
+        """
+        Print a string representation of the items on the skewer.
+        :return A string containing all the items on the skewer, from front
+        to back, comma separated, and surrounded with square brackets
+        """
+        
+        if self.top:
+            return "[ " + self.top.string_em() + " ]"
+        else:
+            return "[]"
